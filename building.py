@@ -11,6 +11,7 @@ class Field(IntEnum):
     WALL = 2
     INSIDE = 3
     DOOR = 4
+    EXIT_DOOR = 5
 
 
 class Building:
@@ -26,7 +27,7 @@ class Building:
     def neighbours(self, point):
         n, m = self.image.shape[:2]
         x, y = point
-        for dx,dy in zip([-1, 0, 1, 0], [0, 1, 0, -1]):
+        for dx, dy in zip([-1, 0, 1, 0], [0, 1, 0, -1]):
                 nx, ny = x + dx, y + dy
                 if nx < 0 or nx >= n or ny < 0 or ny >= m:
                     continue
@@ -48,7 +49,18 @@ class Building:
                 elif np.any(self.image[nx, ny] != self.image[x, y]):
                     walls_doors.append((nx, ny))
         colours = {tuple(self.image[x, y]) for x, y in walls_doors}
+
         print(colours)
+        if self.origin == 'Antonio':
+            rmap = {(34, 177, 76): Field.DOOR,
+                    (255, 255, 255): Field.WALL,
+                    # also outside, but already done
+                    (0, 0, 0): Field.INSIDE,
+                    }
+            cmap = {rmap[b]: b for b in rmap}
+            cmap[Field.OUTSIDE] = (0, 0, 0)
+        doors = deque([(xx, yy) for (xx, yy) in walls_doors
+                       if tuple(self.image[xx, yy]) == cmap[Field.DOOR]])
 
 
 if __name__ == '__main__':
