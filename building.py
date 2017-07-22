@@ -59,12 +59,18 @@ class Building:
                     }
             cmap = {rmap[b]: b for b in rmap}
             cmap[Field.OUTSIDE] = (0, 0, 0)
-        doors = deque([(xx, yy) for (xx, yy) in walls_doors
-                       if tuple(self.image[xx, yy]) == cmap[Field.DOOR]])
+
+            for x in range(self.image.shape[0]):
+                for y in range(self.image.shape[1]):
+                    el = tuple(self.image[x, y])
+                    if el in rmap and self.fields[x,y] == Field.UNPROCESSED:
+                        self.fields[x, y] = rmap[el]
+                    elif el not in rmap:
+                        print("Unknown field at ({}, {}) with value {}.".format(x, y, el))
 
 
 if __name__ == '__main__':
-    r1 = 'buildings/export3.png'
+    r1 = 'buildings/export2.png'
     bdg = Building(r1)
     plt.imshow(bdg.fields)
     plt.show()
